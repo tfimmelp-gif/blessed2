@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Dashboard</title>
+
+<style>
+  :root{
+    --primary:#667eea;
+    --primary-dark:#5568d3;
+    --bg:#f5f7fa;
+    --card:#ffffff;
+    --text:#2d3748;
+    --text-muted:#718096;
+    --border:#e2e8f0;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --radius:12px;
+    --gap:20px;
+  }
+
+  html,body{height:100%; margin:0;}
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    color: var(--text);
+  }
+
+  /* Header */
+  .topbar {
+    background: #fff;
+    color: var(--text);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .topbar-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .topbar h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  
+  .topbar-badge {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  /* Main Content */
+  .dashboard-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+  
+  .section-header {
+    margin-bottom: 24px;
+  }
+  
+  .section-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 8px 0;
+  }
+  
+  .section-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  /* Folder Grid */
+  .folder-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--gap);
+  }
+
+  .folder {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .folder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .folder:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+  }
+  
+  .folder:hover::before {
+    transform: scaleX(1);
+  }
+  
+  .folder-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .folder-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    transition: transform 0.3s ease;
+  }
+  
+  .folder:hover .folder-icon {
+    transform: scale(1.1);
+  }
+  
+  .folder-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--bg);
+    padding: 4px 10px;
+    border-radius: 12px;
+  }
+
+  .folder-content {
+    flex: 1;
+  }
+  
+  .folder-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+  }
+  
+  .folder-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  
+  .folder-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .folder-info {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  
+  .folder-info span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .folder-arrow {
+    color: var(--primary);
+    font-size: 18px;
+    transition: transform 0.3s ease;
+  }
+  
+  .folder:hover .folder-arrow {
+    transform: translateX(4px);
+  }
+
+  .spinner-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .spinner {
+    width: 64px;
+    height: 64px;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    padding: 20px;
+  }
+
+  .modal-box {
+    background: #fff;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    animation: modalPop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  @keyframes modalPop {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  
+  .modal-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+  }
+
+  .modal h3 {
+    margin: 0 0 12px 0;
+    color: #dc2626;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .modal p {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 0 24px 0;
+  }
+
+  .logout-btn {
+    padding: 14px 24px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.3);
+  }
+
+  .logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
+  }
+  
+  .logout-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Responsive */
+  @media (max-width:768px){
+    .dashboard-wrapper{ padding: 24px 16px; }
+    .folder-container{ grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .topbar-content{ padding: 16px 20px; }
+    .topbar h1{ font-size: 20px; }
+    .topbar-badge{ font-size: 12px; padding: 4px 12px; }
+  }
+
+  @media (max-width:480px){
+    .folder-container{ grid-template-columns: 1fr; gap: 14px; }
+    .folder{ padding: 20px; }
+    .topbar-content{ flex-direction: column; align-items: flex-start; gap: 12px; }
+    .topbar-left{ width: 100%; }
+    .modal-box{ padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-content">
+    <div class="topbar-left">
+      <h1>Document Center</h1>
+      <span class="topbar-badge">Business</span>
+    </div>
+    <div class="topbar-right">
+      <div class="user-avatar">JD</div>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-wrapper">
+  <div class="section-header">
+    <h2>Your Folders</h2>
+    <p>Access your business documents and files</p>
+  </div>
+
+  <div class="folder-container">
+    <div class="folder" onclick="openFolder()">
+      <div class="folder-header">
+        <div class="folder-icon">💰</div>
+        <div class="folder-meta">12 files</div>
+      </div>
+      <div class="folder-content">
+        <h3 class="folder-title">Finance Reports</h3>
+        <p class="folder-desc">Quarterly reports, budgets, and financial statements</p>
+      </div>
+      <div class="folder-footer">
+        <div class="folder-info">
+          <span>📅 Updated today</span>
+        </div>
+        <div class="folder-arrow">→</div>
+      </div>
+    </div>
+
+    <div class="folder" onclick="openFolder()">
+      <div class="folder-header">
+        <div class="folder-icon">👥</div>
+        <div class="folder-meta">28 files</div>
+      </div>
+      <div class="folder-content">
+        <h3 class="folder-title">Employee Records</h3>
+        <p class="folder-desc">Personnel files, contracts, and HR documents</p>
+      </div>
+      <div class="folder-footer">
+        <div class="folder-info">
+          <span>📅 2 days ago</span>
+        </div>
+        <div class="folder-arrow">→</div>
+      </div>
+    </div>
+
+    <div class="folder" onclick="openFolder()">
+      <div class="folder-header">
+        <div class="folder-icon">📊</div>
+        <div class="folder-meta">45 files</div>
+      </div>
+      <div class="folder-content">
+        <h3 class="folder-title">Sales & Analytics</h3>
+        <p class="folder-desc">Sales data, performance metrics, and reports</p>
+      </div>
+      <div class="folder-footer">
+        <div class="folder-info">
+          <span>📅 Updated today</span>
+        </div>
+        <div class="folder-arrow">→</div>
+      </div>
+    </div>
+
+    <div class="folder" onclick="openFolder()">
+      <div class="folder-header">
+        <div class="folder-icon">📋</div>
+        <div class="folder-meta">34 files</div>
+      </div>
+      <div class="folder-content">
+        <h3 class="folder-title">Contracts & Legal</h3>
+        <p class="folder-desc">Legal agreements, NDAs, and compliance docs</p>
+      </div>
+      <div class="folder-footer">
+        <div class="folder-info">
+          <span>📅 1 week ago</span>
+        </div>
+        <div class="folder-arrow">→</div>
+      </div>
+    </div>
+
+    <div class="folder" onclick="openFolder()">
+      <div class="folder-header">
+        <div class="folder-icon">🤝</div>
+        <div class="folder-meta">56 files</div>
+      </div>
+      <div class="folder-content">
+        <h3 class="folder-title">Client Documents</h3>
+        <p class="folder-desc">Client proposals, invoices, and communications</p>
+      </div>
+      <div class="folder-footer">
+        <div class="folder-info">
+          <span>📅 3 days ago</span>
+        </div>
+        <div class="folder-arrow">→</div>
+      </div>
+    </div>
+
+    <div class="folder" onclick="openFolder()">
+      <div class="folder-header">
+        <div class="folder-icon">📝</div>
+        <div class="folder-meta">19 files</div>
+      </div>
+      <div class="folder-content">
+        <h3 class="folder-title">Internal Memos</h3>
+        <p class="folder-desc">Company announcements and internal updates</p>
+      </div>
+      <div class="folder-footer">
+        <div class="folder-info">
+          <span>📅 5 days ago</span>
+        </div>
+        <div class="folder-arrow">→</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Spinner -->
+<div class="spinner-overlay" id="loading">
+  <div class="spinner"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-icon">🔒</div>
+    <h3>Access Denied</h3>
+    <p>You don't have permission to access this folder.<br>
+       Please contact your administrator or logout to return to the main page.</p>
+    <button class="logout-btn" onclick="logout()">Return to Login</button>
+  </div>
+</div>
+
+
+<script>
+function openFolder() {
+  const spinner = document.getElementById("loading");
+  const modal = document.getElementById("modal");
+
+  spinner.style.display = "flex";
+
+  setTimeout(() => {
+    spinner.style.display = "none";
+    modal.style.display = "flex";
+  }, 1200);
+}
+
+function logout() {
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
