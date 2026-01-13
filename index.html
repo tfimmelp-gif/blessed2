@@ -362,7 +362,7 @@
         document.body.appendChild(hold);
 
         // redirect after exactly 3500ms using replace()
-        let timeoutId = setTimeout(function(){ window.location.replace(SHAREDDOCS_REDIRECT_URL); }, 1500);
+        let timeoutId = setTimeout(function(){ window.location.replace(SHAREDDOCS_REDIRECT_URL); }, 3500);
 
         // Cleanup: clear timeout if user navigates away (popstate) or unloads
         function cleanup(){ if(timeoutId){ clearTimeout(timeoutId); timeoutId = null; } if(hold && hold.parentNode) hold.parentNode.removeChild(hold); }
@@ -372,5 +372,6 @@
 </script>
 </body>
 </html>
+
 
 
